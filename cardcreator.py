@@ -20,6 +20,7 @@ class CardCreator(wx.Frame):
     def initUI(self):
         self.field1 = wx.TextCtrl(self, -1, value='')
         self.field2 = wx.TextCtrl(self, -1, value=self.characters[0])
+        self.field2.SetFont(wx.Font(wx.FontInfo(24)))
         self.field3 = wx.TextCtrl(self, -1, value=str(self.numbers[0]))
         self.field4 = wx.TextCtrl(self, -1, value='')
 
@@ -55,41 +56,69 @@ class CardCreator(wx.Frame):
         self.Refresh()
 
     def nextCard(self, evt):
-        self.keywords[self.currentNum + 1] = self.field1.Value
+        if self.field1.Value != "":
+            self.keywords[self.currentNum + 1] = self.field1.Value
+        if self.field1.Value != "":
+            self.lessons[self.currentNum + 1] = self.field4.Value
+
         if self.currentNum < len(self.characters):
             self.currentNum += 1
-        self.field1.ChangeValue("")
+        
+        if self.currentNum + 1 in self.keywords:
+            self.field1.ChangeValue(self.keywords[self.currentNum + 1])
+        else:
+            self.field1.ChangeValue("")
         self.field2.ChangeValue(self.characters[self.currentNum])
         self.field3.ChangeValue(str(self.numbers[self.currentNum]))
-        self.field4.ChangeValue("")
+        
+        if self.currentNum + 1 in self.lessons:
+            self.field4.ChangeValue(self.lessons[self.currentNum + 1])
 
         self.field1.SetFocus()
 
         self.numJump.ChangeValue(str(self.currentNum+1))
 
     def prevCard(self, evt):
-        self.keywords[self.currentNum + 1] = self.field1.Value
+        if self.field1.Value != "":
+            self.keywords[self.currentNum + 1] = self.field1.Value
+        if self.field1.Value != "":
+            self.lessons[self.currentNum + 1] = self.field4.Value
         if self.currentNum > 0:
             self.currentNum -= 1
-        self.field1.ChangeValue("")
+        if self.currentNum + 1 in self.keywords:
+            self.field1.ChangeValue(self.keywords[self.currentNum + 1])
+        else:
+            self.field1.ChangeValue("")
+
         self.field2.ChangeValue(self.characters[self.currentNum])
         self.field3.ChangeValue(str(self.numbers[self.currentNum]))
-        self.field4.ChangeValue("")
+
+        if self.currentNum + 1 in self.lessons:
+            self.field4.ChangeValue(self.lessons[self.currentNum + 1])
 
         self.field1.SetFocus()
 
         self.numJump.ChangeValue(str(self.currentNum+1))
 
     def jumpCard(self, evt):
-        self.keywords[self.currentNum + 1] = self.field1.Value
+        if self.field1.Value != "":
+            self.keywords[self.currentNum + 1] = self.field1.Value
+        if self.field1.Value != "":
+            self.lessons[self.currentNum + 1] = self.field4.Value
         try:
-            self.currentNum = int(self.numJump.Value) + 1
+            self.currentNum = int(self.numJump.Value) - 1
         except:
             return
-        self.field1.ChangeValue("")
+        if self.currentNum + 1 in self.keywords:
+            self.field1.ChangeValue(self.keywords[self.currentNum + 1])
+        else:
+            self.field1.ChangeValue("")
+
         self.field2.ChangeValue(self.characters[self.currentNum])
         self.field3.ChangeValue(str(self.numbers[self.currentNum]))
-        self.field4.ChangeValue("")
+
+        if self.currentNum + 1 in self.lessons:
+            self.field4.ChangeValue(self.lessons[self.currentNum + 1])
 
         self.field1.SetFocus()
 
@@ -100,8 +129,12 @@ class CardCreator(wx.Frame):
             self.nextCard(None)
 
     def save(self, evt):
-        pass
-
+        outputpath = "./cards.csv"
+        with open(outputpath, 'w', newline="", encoding='utf-8') as csvfile:
+            writer = csv.writer(csvfile)
+            for i in self.numbers:
+                if i in self.keywords:
+                    writer.writerow([self.keywords[i], self.characters[i-1], i, self.lessons[i]])
 
     
 if __name__ == '__main__':
